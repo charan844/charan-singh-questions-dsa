@@ -1,0 +1,117 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Define the structure for a node
+struct Node {
+    int data;
+    struct Node* next;
+};
+
+// Function to check if the stack is empty
+int isEmpty(struct Node* top) {
+    return top == NULL;
+}
+
+// Function to push an element onto the stack
+void push(struct Node** top_ref, int new_data) {
+    // Allocate memory for the new node
+    struct Node* new_node = (struct Node*) malloc(sizeof(struct Node));
+    
+    if (!new_node) {
+        printf("Stack overflow\n");
+        return;
+    }
+
+    new_node->data = new_data;
+    new_node->next = *top_ref;
+    *top_ref = new_node;
+
+    printf("%d pushed onto stack\n", new_data);
+}
+
+// Function to pop an element from the stack
+int pop(struct Node** top_ref) {
+    if (isEmpty(*top_ref)) {
+        printf("Stack underflow\n");
+        return -1;
+    }
+
+    struct Node* temp = *top_ref;
+    *top_ref = (*top_ref)->next;
+    int popped = temp->data;
+    free(temp);
+
+    return popped;
+}
+
+// Function to peek at the top element of the stack
+int peek(struct Node* top) {
+    if (isEmpty(top)) {
+        printf("Stack is empty\n");
+        return -1;
+    }
+
+    return top->data;
+}
+
+// Function to display the elements of the stack
+void display(struct Node* top) {
+    if (isEmpty(top)) {
+        printf("Stack is empty\n");
+        return;
+    }
+
+    printf("Stack elements: ");
+    while (top != NULL) {
+        printf("%d -> ", top->data);
+        top = top->next;
+    }
+    printf("NULL\n");
+}
+
+// Main function with a menu
+int main() {
+    struct Node* top = NULL;
+    int choice, value;
+
+    do {
+        printf("\nMenu:\n");
+        printf("1. Push\n");
+        printf("2. Pop\n");
+        printf("3. Peek\n");
+        printf("4. Display stack\n");
+        printf("5. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                printf("Enter value to push: ");
+                scanf("%d", &value);
+                push(&top, value);
+                break;
+            case 2:
+                value = pop(&top);
+                if (value != -1) {
+                    printf("Popped element: %d\n", value);
+                }
+                break;
+            case 3:
+                value = peek(top);
+                if (value != -1) {
+                    printf("Top element: %d\n", value);
+                }
+                break;
+            case 4:
+                display(top);
+                break;
+            case 5:
+                printf("Exiting...\n");
+                break;
+            default:
+                printf("Invalid choice! Please try again.\n");
+        }
+    } while (choice != 5);
+
+    return 0;
+}
