@@ -1,0 +1,76 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <string.h>
+
+// Stack structure
+struct Stack {
+    int top;
+    int capacity;
+    int* array;
+};
+
+// Create a stack of a given capacity
+struct Stack* createStack(int capacity) {
+    struct Stack* stack = (struct Stack*) malloc(sizeof(struct Stack));
+    stack->capacity = capacity;
+    stack->top = -1;
+    stack->array = (int*) malloc(stack->capacity * sizeof(int));
+    return stack;
+}
+
+// Check if the stack is empty
+int isEmpty(struct Stack* stack) {
+    return stack->top == -1;
+}
+
+// Push an element onto the stack
+void push(struct Stack* stack, int item) {
+    stack->array[++stack->top] = item;
+}
+
+// Pop an element from the stack
+int pop(struct Stack* stack) {
+    if (isEmpty(stack)) {
+        printf("Stack underflow\n");
+        exit(EXIT_FAILURE);
+    }
+    return stack->array[stack->top--];
+}
+
+// Function to evaluate a postfix expression
+int evaluatePostfix(char* exp) {
+    // Create a stack to hold the operands
+    struct Stack* stack = createStack(strlen(exp));
+    int i;
+
+    // Iterate through the postfix expression
+    for (i = 0; exp[i]; ++i) {
+        // If the character is a digit, push it to the stack
+        if (isdigit(exp[i])) {
+            push(stack, exp[i] - '0');
+        }
+        // If the character is an operator, pop two elements from the stack
+        // and perform the operation, then push the result back onto the stack
+        else {
+            int val1 = pop(stack);
+            int val2 = pop(stack);
+            
+            switch (exp[i]) {
+                case '+': push(stack, val2 + val1); break;
+                case '-': push(stack, val2 - val1); break;
+                case '*': push(stack, val2 * val1); break;
+                case '/': push(stack, val2 / val1); break;
+            }
+        }
+    }
+
+    // The final result is the last element in the stack
+    return pop(stack);
+}
+
+int main() {
+    char exp[] = "231*+9-"; // Example postfix expression
+    printf("Postfix Evaluation: %d\n", evaluatePostfix(exp));
+    return 0;
+}
